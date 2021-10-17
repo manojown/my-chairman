@@ -1,0 +1,35 @@
+service: meltwater-finance
+custom:
+  configFile: ${file(./config/config.yml)}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+  environment:
+    PROVIDER: ${self:custom.configFile.PROVIDER}
+
+functions:
+  server:
+    handler: index.server
+    timeout: 30
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}' 
+ 
+# layers:
+#   ffmpeg-installer:
+#     path: layer
+
+useDotenv: true
+plugins:
+  - serverless-offline
+
+
+
+  
